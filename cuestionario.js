@@ -3,6 +3,7 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import connectDB from "./dataBase.js";
+import preguntaRoutes from "./src/examen/pregunta/pregunta.routes.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
@@ -36,6 +37,8 @@ app.get("/", (req, res) => {
     database: mongoose.connection.readyState === 1 ? "Conectada" : "Desconectada"
   });
 });
+
+app.use("/api/preguntas", preguntaRoutes);
 
 // Ruta de prueba para verificar conexión a DB
 app.get("/api/health", (req, res) => {
