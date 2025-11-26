@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import connectDB from "./dataBase.js";
 import preguntaRoutes from "./src/examen/pregunta/pregunta.routes.js";
+import nivelDificultadRoutes from "./src/examen/nivelDificultad/nivelDificultad.routes.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
@@ -29,16 +30,23 @@ app.use(express.urlencoded({ extended: true }));
 // Conectar a MongoDB Atlas
 connectDB();
 
-// Rutas
+// Rutas principales
 app.get("/", (req, res) => {
   res.json({ 
     message: "Servidor funcionando con MongoDB Atlas 🔥",
     status: "OK",
-    database: mongoose.connection.readyState === 1 ? "Conectada" : "Desconectada"
+    database: mongoose.connection.readyState === 1 ? "Conectada" : "Desconectada",
+    endpoints: {
+      preguntas: "/api/preguntas",
+      nivelesDificultad: "/api/niveles-dificultad",
+      health: "/api/health"
+    }
   });
 });
 
+// Rutas de la API
 app.use("/api/preguntas", preguntaRoutes);
+app.use("/api/niveles-dificultad", nivelDificultadRoutes);
 
 // Ruta de prueba para verificar conexión a DB
 app.get("/api/health", (req, res) => {
@@ -53,7 +61,16 @@ app.get("/api/health", (req, res) => {
 app.use((req, res) => {
   res.status(404).json({ 
     error: "Ruta no encontrada",
-    path: req.path 
+    path: req.path,
+    availableRoutes: [
+      "GET /",
+      "GET /api/health",
+      "GET /api/preguntas",
+      "POST /api/preguntas",
+      "GET /api/niveles-dificultad",
+      "POST /api/niveles-dificultad",
+      "POST /api/niveles-dificultad/multiples"
+    ]
   });
 });
 
@@ -72,4 +89,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor escuchando en puerto ${PORT}`);
   console.log(`🌐 URL: http://localhost:${PORT}`);
+  console.log(`📚 Base de datos: cuestionarioDB`);
 });
