@@ -30,6 +30,8 @@ console.log('🔄 Intentando cargar rutas...');
 
 let rangoEdadRoutes;
 let categoriasRoutes;
+let nivelDificultadRoutes;
+let subcategoriaRoutes;
 
 // Cargar rutas de rangoEdad
 try {
@@ -43,36 +45,65 @@ try {
   router.get("/", (req, res) => {
     res.json({ message: "Ruta temporal de rangos-edad - FALLBACK" });
   });
-  router.post("/", (req, res) => {
-    res.json({ 
-      message: "Crear rango temporal - FALLBACK",
-      body: req.body 
-    });
-  });
   rangoEdadRoutes = router;
   console.log('🆘 Rutas temporales creadas para rangoEdad');
 }
 
-// Cargar rutas de categorias
+// Cargar rutas de categorias (usa la carpeta que realmente tienes)
 try {
+  // PRIMERO intenta con "categorias" (si esa es la carpeta correcta)
   const categoriasModule = await import("./src/examen/categorias/categorias.routes.js");
   categoriasRoutes = categoriasModule.default;
   console.log('✅ Categorias routes cargado correctamente');
 } catch (error) {
-  console.log('❌ ERROR cargando Categorias routes:', error.message);
+  console.log('❌ ERROR cargando Categorias routes (primer intento):', error.message);
+  try {
+    // SEGUNDO intento con "categories" (por si la carpeta se llama diferente)
+    const categoriesModule = await import("./src/examen/categories/categories.routes.js");
+    categoriasRoutes = categoriesModule.default;
+    console.log('✅ Categories routes cargado correctamente');
+  } catch (error2) {
+    console.log('❌ ERROR cargando Categories routes (segundo intento):', error2.message);
+    const { Router } = await import("express");
+    const router = Router();
+    router.get("/", (req, res) => {
+      res.json({ message: "Ruta temporal de categorias - FALLBACK" });
+    });
+    categoriasRoutes = router;
+    console.log('🆘 Rutas temporales creadas para categorias');
+  }
+}
+
+// Cargar rutas de nivelDificultad
+try {
+  const nivelDificultadModule = await import("./src/examen/nivelDificultad/nivelDificultad.routes.js");
+  nivelDificultadRoutes = nivelDificultadModule.default;
+  console.log('✅ NivelDificultad routes cargado correctamente');
+} catch (error) {
+  console.log('❌ ERROR cargando NivelDificultad routes:', error.message);
   const { Router } = await import("express");
   const router = Router();
   router.get("/", (req, res) => {
-    res.json({ message: "Ruta temporal de categorias - FALLBACK" });
+    res.json({ message: "Ruta temporal de nivel-dificultad - FALLBACK" });
   });
-  router.post("/", (req, res) => {
-    res.json({ 
-      message: "Crear categoría temporal - FALLBACK",
-      body: req.body 
-    });
+  nivelDificultadRoutes = router;
+  console.log('🆘 Rutas temporales creadas para nivelDificultad');
+}
+
+// Cargar rutas de subcategoria
+try {
+  const subcategoriaModule = await import("./src/examen/subcategoria/subcategoria.routes.js");
+  subcategoriaRoutes = subcategoriaModule.default;
+  console.log('✅ Subcategoria routes cargado correctamente');
+} catch (error) {
+  console.log('❌ ERROR cargando Subcategoria routes:', error.message);
+  const { Router } = await import("express");
+  const router = Router();
+  router.get("/", (req, res) => {
+    res.json({ message: "Ruta temporal de subcategoria - FALLBACK" });
   });
-  categoriasRoutes = router;
-  console.log('🆘 Rutas temporales creadas para categorias');
+  subcategoriaRoutes = router;
+  console.log('🆘 Rutas temporales creadas para subcategoria');
 }
 
 // Rutas
@@ -83,20 +114,30 @@ app.get("/", (req, res) => {
     database: mongoose.connection.readyState === 1 ? "Conectada" : "Desconectada",
     endpoints: {
       rangosEdad: "/api/rangos-edad",
-      categorias: "/api/categorias"
+      categorias: "/api/categorias",
+      nivelDificultad: "/api/nivel-dificultad",
+      subcategoria: "/api/subcategoria"
     }
   });
 });
 
 app.use("/api/rangos-edad", rangoEdadRoutes);
 app.use("/api/categorias", categoriasRoutes);
+app.use("/api/nivel-dificultad", nivelDificultadRoutes);
+app.use("/api/subcategoria", subcategoriaRoutes);
 
 // Ruta de debug
 app.get("/api/debug", (req, res) => {
   res.json({
     message: "Debug route working",
     timestamp: new Date().toISOString(),
-    database: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected"
+    database: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
+    endpoints: {
+      rangosEdad: "/api/rangos-edad",
+      categorias: "/api/categorias", 
+      nivelDificultad: "/api/nivel-dificultad",
+      subcategoria: "/api/subcategoria"
+    }
   });
 });
 
@@ -111,7 +152,11 @@ app.use((req, res) => {
       "GET /api/rangos-edad",
       "POST /api/rangos-edad",
       "GET /api/categorias",
-      "POST /api/categorias"
+      "POST /api/categorias",
+      "GET /api/nivel-dificultad", 
+      "POST /api/nivel-dificultad",
+      "GET /api/subcategoria",
+      "POST /api/subcategoria"
     ]
   });
 });
@@ -136,4 +181,6 @@ app.listen(PORT, () => {
   console.log(`   - http://localhost:${PORT}/api/debug`);
   console.log(`   - http://localhost:${PORT}/api/rangos-edad`);
   console.log(`   - http://localhost:${PORT}/api/categorias`);
+  console.log(`   - http://localhost:${PORT}/api/nivel-dificultad`);
+  console.log(`   - http://localhost:${PORT}/api/subcategoria`);
 });
