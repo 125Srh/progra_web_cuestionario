@@ -25,19 +25,19 @@ app.use(express.urlencoded({ extended: true }));
 // Conectar a MongoDB Atlas
 connectDB();
 
-// DEBUG: Cargar rutas con importación dinámica
-console.log('🔄 Intentando cargar rutas de rangoEdad...');
+// Cargar rutas con importación dinámica
+console.log('🔄 Intentando cargar rutas...');
 
 let rangoEdadRoutes;
+let categoriasRoutes;
+
+// Cargar rutas de rangoEdad
 try {
-  const module = await import("./src/examen/rangoEdad/rangoEdad.routes.js");
-  rangoEdadRoutes = module.default;
+  const rangoEdadModule = await import("./src/examen/rangoEdad/rangoEdad.routes.js");
+  rangoEdadRoutes = rangoEdadModule.default;
   console.log('✅ RangoEdad routes cargado correctamente');
 } catch (error) {
   console.log('❌ ERROR cargando RangoEdad routes:', error.message);
-  console.log('📁 Ruta intentada:', './src/examen/rangoEdad/rangoEdad.routes.js');
-  
-  // Crear rutas básicas como fallback
   const { Router } = await import("express");
   const router = Router();
   router.get("/", (req, res) => {
@@ -50,7 +50,29 @@ try {
     });
   });
   rangoEdadRoutes = router;
-  console.log('🆘 Rutas temporales creadas como fallback');
+  console.log('🆘 Rutas temporales creadas para rangoEdad');
+}
+
+// Cargar rutas de categorias
+try {
+  const categoriasModule = await import("./src/examen/categorias/categorias.routes.js");
+  categoriasRoutes = categoriasModule.default;
+  console.log('✅ Categorias routes cargado correctamente');
+} catch (error) {
+  console.log('❌ ERROR cargando Categorias routes:', error.message);
+  const { Router } = await import("express");
+  const router = Router();
+  router.get("/", (req, res) => {
+    res.json({ message: "Ruta temporal de categorias - FALLBACK" });
+  });
+  router.post("/", (req, res) => {
+    res.json({ 
+      message: "Crear categoría temporal - FALLBACK",
+      body: req.body 
+    });
+  });
+  categoriasRoutes = router;
+  console.log('🆘 Rutas temporales creadas para categorias');
 }
 
 // Rutas
@@ -58,11 +80,16 @@ app.get("/", (req, res) => {
   res.json({ 
     message: "Servidor funcionando con MongoDB Atlas 🔥",
     status: "OK",
-    database: mongoose.connection.readyState === 1 ? "Conectada" : "Desconectada"
+    database: mongoose.connection.readyState === 1 ? "Conectada" : "Desconectada",
+    endpoints: {
+      rangosEdad: "/api/rangos-edad",
+      categorias: "/api/categorias"
+    }
   });
 });
 
 app.use("/api/rangos-edad", rangoEdadRoutes);
+app.use("/api/categorias", categoriasRoutes);
 
 // Ruta de debug
 app.get("/api/debug", (req, res) => {
@@ -82,7 +109,9 @@ app.use((req, res) => {
       "GET /",
       "GET /api/debug", 
       "GET /api/rangos-edad",
-      "POST /api/rangos-edad"
+      "POST /api/rangos-edad",
+      "GET /api/categorias",
+      "POST /api/categorias"
     ]
   });
 });
@@ -106,4 +135,5 @@ app.listen(PORT, () => {
   console.log(`   - http://localhost:${PORT}/`);
   console.log(`   - http://localhost:${PORT}/api/debug`);
   console.log(`   - http://localhost:${PORT}/api/rangos-edad`);
+  console.log(`   - http://localhost:${PORT}/api/categorias`);
 });
