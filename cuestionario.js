@@ -3,7 +3,6 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import connectDB from "./dataBase.js";
-import preguntaRoutes from "./src/examen/pregunta/pregunta.routes.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
@@ -11,13 +10,10 @@ import { dirname, join } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Cargar variables de entorno desde el archivo .env en la misma carpeta
+// Cargar variables de entorno
 dotenv.config({ path: join(__dirname, ".env") });
 
-// Verificar que las variables de entorno se cargaron
-console.log('📋 Variables de entorno cargadas');
-console.log('MONGODB_URI existe:', !!process.env.MONGODB_URI);
-console.log('PORT:', process.env.PORT || 3000);
+console.log('🔍 Iniciando servidor...');
 
 const app = express();
 
@@ -29,6 +25,34 @@ app.use(express.urlencoded({ extended: true }));
 // Conectar a MongoDB Atlas
 connectDB();
 
+// DEBUG: Cargar rutas con importación dinámica
+console.log('🔄 Intentando cargar rutas de rangoEdad...');
+
+let rangoEdadRoutes;
+try {
+  const module = await import("./src/examen/rangoEdad/rangoEdad.routes.js");
+  rangoEdadRoutes = module.default;
+  console.log('✅ RangoEdad routes cargado correctamente');
+} catch (error) {
+  console.log('❌ ERROR cargando RangoEdad routes:', error.message);
+  console.log('📁 Ruta intentada:', './src/examen/rangoEdad/rangoEdad.routes.js');
+  
+  // Crear rutas básicas como fallback
+  const { Router } = await import("express");
+  const router = Router();
+  router.get("/", (req, res) => {
+    res.json({ message: "Ruta temporal de rangos-edad - FALLBACK" });
+  });
+  router.post("/", (req, res) => {
+    res.json({ 
+      message: "Crear rango temporal - FALLBACK",
+      body: req.body 
+    });
+  });
+  rangoEdadRoutes = router;
+  console.log('🆘 Rutas temporales creadas como fallback');
+}
+
 // Rutas
 app.get("/", (req, res) => {
   res.json({ 
@@ -38,14 +62,14 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use("/api/preguntas", preguntaRoutes);
+app.use("/api/rangos-edad", rangoEdadRoutes);
 
-// Ruta de prueba para verificar conexión a DB
-app.get("/api/health", (req, res) => {
+// Ruta de debug
+app.get("/api/debug", (req, res) => {
   res.json({
-    server: "Running",
-    database: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
-    timestamp: new Date().toISOString()
+    message: "Debug route working",
+    timestamp: new Date().toISOString(),
+    database: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected"
   });
 });
 
@@ -53,7 +77,13 @@ app.get("/api/health", (req, res) => {
 app.use((req, res) => {
   res.status(404).json({ 
     error: "Ruta no encontrada",
-    path: req.path 
+    path: req.path,
+    availableRoutes: [
+      "GET /",
+      "GET /api/debug", 
+      "GET /api/rangos-edad",
+      "POST /api/rangos-edad"
+    ]
   });
 });
 
@@ -72,4 +102,8 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor escuchando en puerto ${PORT}`);
   console.log(`🌐 URL: http://localhost:${PORT}`);
+  console.log(`📊 Endpoints disponibles:`);
+  console.log(`   - http://localhost:${PORT}/`);
+  console.log(`   - http://localhost:${PORT}/api/debug`);
+  console.log(`   - http://localhost:${PORT}/api/rangos-edad`);
 });
