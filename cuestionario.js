@@ -1,3 +1,4 @@
+// cuestionario.js
 import express from "express";
 import morgan from "morgan";
 import dotenv from "dotenv";
@@ -32,6 +33,7 @@ let rangoEdadRoutes;
 let categoriasRoutes;
 let nivelDificultadRoutes;
 let subcategoriaRoutes;
+let authRoutes;
 
 // Cargar rutas de rangoEdad
 try {
@@ -51,14 +53,12 @@ try {
 
 // Cargar rutas de categorias (usa la carpeta que realmente tienes)
 try {
-  // PRIMERO intenta con "categorias" (si esa es la carpeta correcta)
   const categoriasModule = await import("./src/examen/categorias/categorias.routes.js");
   categoriasRoutes = categoriasModule.default;
   console.log('✅ Categorias routes cargado correctamente');
 } catch (error) {
   console.log('❌ ERROR cargando Categorias routes (primer intento):', error.message);
   try {
-    // SEGUNDO intento con "categories" (por si la carpeta se llama diferente)
     const categoriesModule = await import("./src/examen/categories/categories.routes.js");
     categoriasRoutes = categoriesModule.default;
     console.log('✅ Categories routes cargado correctamente');
@@ -106,6 +106,21 @@ try {
   console.log('🆘 Rutas temporales creadas para subcategoria');
 }
 
+// Cargar rutas de auth (nueva carpeta)
+try {
+  const authModule = await import("./src/auth/auth.routes.js");
+  authRoutes = authModule.default;
+  console.log('✅ Auth routes cargado correctamente');
+} catch (error) {
+  console.log('❌ ERROR cargando Auth routes:', error.message);
+  const { Router } = await import("express");
+  const router = Router();
+  router.post("/register", (req, res) => res.status(500).json({ message: "Auth no disponible - FALLBACK" }));
+  router.post("/login", (req, res) => res.status(500).json({ message: "Auth no disponible - FALLBACK" }));
+  authRoutes = router;
+  console.log('🆘 Rutas temporales creadas para auth');
+}
+
 // Rutas
 app.get("/", (req, res) => {
   res.json({ 
@@ -116,15 +131,20 @@ app.get("/", (req, res) => {
       rangosEdad: "/api/rangos-edad",
       categorias: "/api/categorias",
       nivelDificultad: "/api/nivel-dificultad",
-      subcategoria: "/api/subcategoria"
+      subcategoria: "/api/subcategoria",
+      auth: "/auth"
     }
   });
 });
 
+// Montar rutas
 app.use("/api/rangos-edad", rangoEdadRoutes);
 app.use("/api/categorias", categoriasRoutes);
 app.use("/api/nivel-dificultad", nivelDificultadRoutes);
 app.use("/api/subcategoria", subcategoriaRoutes);
+
+// Montar auth en /auth (fuera de /api para pruebas sencillas en Postman)
+app.use("/auth", authRoutes);
 
 // Ruta de debug
 app.get("/api/debug", (req, res) => {
@@ -136,7 +156,8 @@ app.get("/api/debug", (req, res) => {
       rangosEdad: "/api/rangos-edad",
       categorias: "/api/categorias", 
       nivelDificultad: "/api/nivel-dificultad",
-      subcategoria: "/api/subcategoria"
+      subcategoria: "/api/subcategoria",
+      auth: "/auth"
     }
   });
 });
@@ -156,7 +177,9 @@ app.use((req, res) => {
       "GET /api/nivel-dificultad", 
       "POST /api/nivel-dificultad",
       "GET /api/subcategoria",
-      "POST /api/subcategoria"
+      "POST /api/subcategoria",
+      "POST /auth/register",
+      "POST /auth/login"
     ]
   });
 });
@@ -183,4 +206,5 @@ app.listen(PORT, () => {
   console.log(`   - http://localhost:${PORT}/api/categorias`);
   console.log(`   - http://localhost:${PORT}/api/nivel-dificultad`);
   console.log(`   - http://localhost:${PORT}/api/subcategoria`);
+  console.log(`   - http://localhost:${PORT}/auth (register/login)`);
 });

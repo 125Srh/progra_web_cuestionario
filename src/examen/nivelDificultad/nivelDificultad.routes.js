@@ -1,24 +1,26 @@
-import express from 'express';
-import * as nivelController from './nivelDificultad.controller.js';
+// src/examen/nivelDificultad/nivelDificultad.routes.js
 
-const router = express.Router();
+import { Router } from "express";
 
-// POST - Crear múltiples niveles
-router.post('/multiples', nivelController.crearMultiples);
+import {
+  createNivelDificultad,
+  getNivelesDificultad,
+  getNivelDificultadById,
+  updateNivelDificultad,
+  deleteNivelDificultad,
+  toggleNivelDificultad
+} from "./nivelDificultad.controller.js";
 
-// GET - Obtener todos los niveles
-router.get('/', nivelController.obtenerTodos);
+import { authorize } from "../../auth/auth.middleware.js";
 
-// GET - Obtener un nivel por ID
-router.get('/:id', nivelController.obtenerPorId);
+const router = Router();
 
-// POST - Crear un nivel
-router.post('/', nivelController.crear);
+router.get("/", authorize(["admin", "profesor"]), getNivelesDificultad);
+router.get("/:id", authorize(["admin", "profesor"]), getNivelDificultadById);
 
-// PUT - Actualizar un nivel
-router.put('/:id', nivelController.actualizar);
-
-// DELETE - Eliminar un nivel
-router.delete('/:id', nivelController.eliminar);
+router.post("/", authorize(["admin"]), createNivelDificultad);
+router.put("/:id", authorize(["admin"]), updateNivelDificultad);
+router.delete("/:id", authorize(["admin"]), deleteNivelDificultad);
+router.patch("/:id/toggle", authorize(["admin"]), toggleNivelDificultad);
 
 export default router;
