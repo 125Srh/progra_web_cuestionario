@@ -6,6 +6,9 @@ import mongoose from "mongoose";
 import connectDB from "./dataBase.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import https from "https";
+import http from "http";
+import { readFileSync } from "fs";
 
 // Configurar __dirname para ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -195,16 +198,32 @@ app.use((err, req, res, next) => {
 
 // Puerto
 const PORT = process.env.PORT || 3000;
+const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor escuchando en puerto ${PORT}`);
-  console.log(`🌐 URL: http://localhost:${PORT}`);
+// Opciones HTTPS
+const httpsOptions = {
+  key: readFileSync(join(__dirname, 'key.pem')),
+  cert: readFileSync(join(__dirname, 'cert.pem'))
+};
+
+// Servidor HTTPS
+https.createServer(httpsOptions, app).listen(HTTPS_PORT, () => {
+  console.log(`🚀 Servidor HTTPS escuchando en puerto ${HTTPS_PORT}`);
+  console.log(`🔒 URL SEGURA: https://localhost:${HTTPS_PORT}`);
   console.log(`📊 Endpoints disponibles:`);
-  console.log(`   - http://localhost:${PORT}/`);
-  console.log(`   - http://localhost:${PORT}/api/debug`);
-  console.log(`   - http://localhost:${PORT}/api/rangos-edad`);
-  console.log(`   - http://localhost:${PORT}/api/categorias`);
-  console.log(`   - http://localhost:${PORT}/api/nivel-dificultad`);
-  console.log(`   - http://localhost:${PORT}/api/subcategoria`);
-  console.log(`   - http://localhost:${PORT}/auth (register/login)`);
+  console.log(`   - https://localhost:${HTTPS_PORT}/`);
+  console.log(`   - https://localhost:${HTTPS_PORT}/api/debug`);
+  console.log(`   - https://localhost:${HTTPS_PORT}/api/rangos-edad`);
+  console.log(`   - https://localhost:${HTTPS_PORT}/api/categorias`);
+  console.log(`   - https://localhost:${HTTPS_PORT}/api/nivel-dificultad`);
+  console.log(`   - https://localhost:${HTTPS_PORT}/api/subcategoria`);
+  console.log(`   - https://localhost:${HTTPS_PORT}/auth (register/login)`);
+});
+
+// Redireccionar HTTP a HTTPS
+http.createServer((req, res) => {
+  res.writeHead(301, { Location: `https://localhost:${HTTPS_PORT}${req.url}` });
+  res.end();
+}).listen(PORT, () => {
+  console.log(`↪️  HTTP (puerto ${PORT}) redirige a HTTPS`);
 });
