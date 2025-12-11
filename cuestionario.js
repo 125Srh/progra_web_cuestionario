@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 connectDB();
 
 // Cargar rutas con importación dinámica
-console.log('🔄 Intentando cargar rutas...');
+console.log(' Intentando cargar rutas...');
 
 let rangoEdadRoutes;
 let categoriasRoutes;
@@ -44,14 +44,14 @@ try {
   rangoEdadRoutes = rangoEdadModule.default;
   console.log('✅ RangoEdad routes cargado correctamente');
 } catch (error) {
-  console.log('❌ ERROR cargando RangoEdad routes:', error.message);
+  console.log(' ERROR cargando RangoEdad routes:', error.message);
   const { Router } = await import("express");
   const router = Router();
   router.get("/", (req, res) => {
     res.json({ message: "Ruta temporal de rangos-edad - FALLBACK" });
   });
   rangoEdadRoutes = router;
-  console.log('🆘 Rutas temporales creadas para rangoEdad');
+  console.log(' Rutas temporales creadas para rangoEdad');
 }
 
 // Cargar rutas de categorias (usa la carpeta que realmente tienes)
@@ -60,20 +60,20 @@ try {
   categoriasRoutes = categoriasModule.default;
   console.log('✅ Categorias routes cargado correctamente');
 } catch (error) {
-  console.log('❌ ERROR cargando Categorias routes (primer intento):', error.message);
+  console.log(' ERROR cargando Categorias routes (primer intento):', error.message);
   try {
     const categoriesModule = await import("./src/examen/categories/categories.routes.js");
     categoriasRoutes = categoriesModule.default;
     console.log('✅ Categories routes cargado correctamente');
   } catch (error2) {
-    console.log('❌ ERROR cargando Categories routes (segundo intento):', error2.message);
+    console.log(' ERROR cargando Categories routes (segundo intento):', error2.message);
     const { Router } = await import("express");
     const router = Router();
     router.get("/", (req, res) => {
       res.json({ message: "Ruta temporal de categorias - FALLBACK" });
     });
     categoriasRoutes = router;
-    console.log('🆘 Rutas temporales creadas para categorias');
+    console.log(' Rutas temporales creadas para categorias');
   }
 }
 
@@ -81,32 +81,32 @@ try {
 try {
   const nivelDificultadModule = await import("./src/examen/nivelDificultad/nivelDificultad.routes.js");
   nivelDificultadRoutes = nivelDificultadModule.default;
-  console.log('✅ NivelDificultad routes cargado correctamente');
+  console.log(' NivelDificultad routes cargado correctamente');
 } catch (error) {
-  console.log('❌ ERROR cargando NivelDificultad routes:', error.message);
+  console.log(' ERROR cargando NivelDificultad routes:', error.message);
   const { Router } = await import("express");
   const router = Router();
   router.get("/", (req, res) => {
     res.json({ message: "Ruta temporal de nivel-dificultad - FALLBACK" });
   });
   nivelDificultadRoutes = router;
-  console.log('🆘 Rutas temporales creadas para nivelDificultad');
+  console.log(' Rutas temporales creadas para nivelDificultad');
 }
 
 // Cargar rutas de subcategoria
 try {
   const subcategoriaModule = await import("./src/examen/subcategoria/subcategoria.routes.js");
   subcategoriaRoutes = subcategoriaModule.default;
-  console.log('✅ Subcategoria routes cargado correctamente');
+  console.log(' Subcategoria routes cargado correctamente');
 } catch (error) {
-  console.log('❌ ERROR cargando Subcategoria routes:', error.message);
+  console.log(' ERROR cargando Subcategoria routes:', error.message);
   const { Router } = await import("express");
   const router = Router();
   router.get("/", (req, res) => {
     res.json({ message: "Ruta temporal de subcategoria - FALLBACK" });
   });
   subcategoriaRoutes = router;
-  console.log('🆘 Rutas temporales creadas para subcategoria');
+  console.log(' Rutas temporales creadas para subcategoria');
 }
 
 // Cargar rutas de auth (nueva carpeta)
@@ -115,13 +115,13 @@ try {
   authRoutes = authModule.default;
   console.log('✅ Auth routes cargado correctamente');
 } catch (error) {
-  console.log('❌ ERROR cargando Auth routes:', error.message);
+  console.log(' ERROR cargando Auth routes:', error.message);
   const { Router } = await import("express");
   const router = Router();
   router.post("/register", (req, res) => res.status(500).json({ message: "Auth no disponible - FALLBACK" }));
   router.post("/login", (req, res) => res.status(500).json({ message: "Auth no disponible - FALLBACK" }));
   authRoutes = router;
-  console.log('🆘 Rutas temporales creadas para auth');
+  console.log(' Rutas temporales creadas para auth');
 }
 
 // Rutas
@@ -208,9 +208,9 @@ const httpsOptions = {
 
 // Servidor HTTPS
 https.createServer(httpsOptions, app).listen(HTTPS_PORT, () => {
-  console.log(`🚀 Servidor HTTPS escuchando en puerto ${HTTPS_PORT}`);
-  console.log(`🔒 URL SEGURA: https://localhost:${HTTPS_PORT}`);
-  console.log(`📊 Endpoints disponibles:`);
+  console.log(` Servidor HTTPS escuchando en puerto ${HTTPS_PORT}`);
+  console.log(` URL SEGURA: https://localhost:${HTTPS_PORT}`);
+  console.log(` Endpoints disponibles:`);
   console.log(`   - https://localhost:${HTTPS_PORT}/`);
   console.log(`   - https://localhost:${HTTPS_PORT}/api/debug`);
   console.log(`   - https://localhost:${HTTPS_PORT}/api/rangos-edad`);
@@ -225,5 +225,5 @@ http.createServer((req, res) => {
   res.writeHead(301, { Location: `https://localhost:${HTTPS_PORT}${req.url}` });
   res.end();
 }).listen(PORT, () => {
-  console.log(`↪️  HTTP (puerto ${PORT}) redirige a HTTPS`);
+  console.log(`↪  HTTP (puerto ${PORT}) redirige a HTTPS`);
 });
