@@ -14,7 +14,7 @@ const __dirname = dirname(__filename);
 // Cargar variables de entorno
 dotenv.config({ path: join(__dirname, ".env") });
 
-console.log('🔍 Iniciando servidor...');
+console.log(' Iniciando servidor...');
 
 const app = express();
 
