@@ -9,9 +9,6 @@ import fs from "fs";
 import os from "os";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import https from "https";
-import http from "http";
-import { readFileSync } from "fs";
 
 // Configurar __dirname para ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -20,9 +17,6 @@ const __dirname = dirname(__filename);
 // Cargar variables de entorno
 dotenv.config({ path: join(__dirname, ".env") });
 
-<<<<<<< HEAD
-console.log(' Iniciando servidor...');
-=======
 // ===================== CONFIGURACIÓN =====================
 const PORT = process.env.PORT || 3000;
 const USAR_HTTPS = process.env.USAR_HTTPS === 'true' || true;
@@ -35,7 +29,6 @@ const LICENCIAS_VALIDAS = new Set([
 ]);
 
 console.log('🚀 Iniciando servidor HTTP/2 con SPDY y licencias...');
->>>>>>> origin/dev-Sarahi-Cuestionario
 
 const app = express();
 
@@ -44,133 +37,6 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-<<<<<<< HEAD
-// Conectar a MongoDB Atlas
-connectDB();
-
-// Cargar rutas con importación dinámica
-console.log(' Intentando cargar rutas...');
-
-let rangoEdadRoutes;
-let categoriasRoutes;
-let nivelDificultadRoutes;
-let subcategoriaRoutes;
-let authRoutes;
-
-// Cargar rutas de rangoEdad
-try {
-  const rangoEdadModule = await import("./src/examen/rangoEdad/rangoEdad.routes.js");
-  rangoEdadRoutes = rangoEdadModule.default;
-  console.log('✅ RangoEdad routes cargado correctamente');
-} catch (error) {
-  console.log(' ERROR cargando RangoEdad routes:', error.message);
-  const { Router } = await import("express");
-  const router = Router();
-  router.get("/", (req, res) => {
-    res.json({ message: "Ruta temporal de rangos-edad - FALLBACK" });
-  });
-  rangoEdadRoutes = router;
-  console.log(' Rutas temporales creadas para rangoEdad');
-}
-
-// Cargar rutas de categorias (usa la carpeta que realmente tienes)
-try {
-  const categoriasModule = await import("./src/examen/categorias/categorias.routes.js");
-  categoriasRoutes = categoriasModule.default;
-  console.log('✅ Categorias routes cargado correctamente');
-} catch (error) {
-  console.log(' ERROR cargando Categorias routes (primer intento):', error.message);
-  try {
-    const categoriesModule = await import("./src/examen/categories/categories.routes.js");
-    categoriasRoutes = categoriesModule.default;
-    console.log('✅ Categories routes cargado correctamente');
-  } catch (error2) {
-    console.log(' ERROR cargando Categories routes (segundo intento):', error2.message);
-    const { Router } = await import("express");
-    const router = Router();
-    router.get("/", (req, res) => {
-      res.json({ message: "Ruta temporal de categorias - FALLBACK" });
-    });
-    categoriasRoutes = router;
-    console.log(' Rutas temporales creadas para categorias');
-  }
-}
-
-// Cargar rutas de nivelDificultad
-try {
-  const nivelDificultadModule = await import("./src/examen/nivelDificultad/nivelDificultad.routes.js");
-  nivelDificultadRoutes = nivelDificultadModule.default;
-  console.log(' NivelDificultad routes cargado correctamente');
-} catch (error) {
-  console.log(' ERROR cargando NivelDificultad routes:', error.message);
-  const { Router } = await import("express");
-  const router = Router();
-  router.get("/", (req, res) => {
-    res.json({ message: "Ruta temporal de nivel-dificultad - FALLBACK" });
-  });
-  nivelDificultadRoutes = router;
-  console.log(' Rutas temporales creadas para nivelDificultad');
-}
-
-// Cargar rutas de subcategoria
-try {
-  const subcategoriaModule = await import("./src/examen/subcategoria/subcategoria.routes.js");
-  subcategoriaRoutes = subcategoriaModule.default;
-  console.log(' Subcategoria routes cargado correctamente');
-} catch (error) {
-  console.log(' ERROR cargando Subcategoria routes:', error.message);
-  const { Router } = await import("express");
-  const router = Router();
-  router.get("/", (req, res) => {
-    res.json({ message: "Ruta temporal de subcategoria - FALLBACK" });
-  });
-  subcategoriaRoutes = router;
-  console.log(' Rutas temporales creadas para subcategoria');
-}
-
-// Cargar rutas de auth (nueva carpeta)
-try {
-  const authModule = await import("./src/auth/auth.routes.js");
-  authRoutes = authModule.default;
-  console.log('✅ Auth routes cargado correctamente');
-} catch (error) {
-  console.log(' ERROR cargando Auth routes:', error.message);
-  const { Router } = await import("express");
-  const router = Router();
-  router.post("/register", (req, res) => res.status(500).json({ message: "Auth no disponible - FALLBACK" }));
-  router.post("/login", (req, res) => res.status(500).json({ message: "Auth no disponible - FALLBACK" }));
-  authRoutes = router;
-  console.log(' Rutas temporales creadas para auth');
-}
-
-// Rutas
-app.get("/", (req, res) => {
-  res.json({ 
-    message: "Servidor funcionando con MongoDB Atlas 🔥",
-    status: "OK",
-    database: mongoose.connection.readyState === 1 ? "Conectada" : "Desconectada",
-    endpoints: {
-      rangosEdad: "/api/rangos-edad",
-      categorias: "/api/categorias",
-      nivelDificultad: "/api/nivel-dificultad",
-      subcategoria: "/api/subcategoria",
-      auth: "/auth"
-    }
-  });
-});
-
-// Montar rutas
-app.use("/api/rangos-edad", rangoEdadRoutes);
-app.use("/api/categorias", categoriasRoutes);
-app.use("/api/nivel-dificultad", nivelDificultadRoutes);
-app.use("/api/subcategoria", subcategoriaRoutes);
-
-// Montar auth en /auth (fuera de /api para pruebas sencillas en Postman)
-app.use("/auth", authRoutes);
-
-// Ruta de debug
-app.get("/api/debug", (req, res) => {
-=======
 // Middleware de validación de licencia
 const validarLicencia = (req, res, next) => {
   // Excepciones para rutas públicas
@@ -276,7 +142,6 @@ async function cargarRutas() {
 app.get("/test-licencia", (req, res) => {
   const isHTTP2 = req.httpVersionMajor === 2;
   
->>>>>>> origin/dev-Sarahi-Cuestionario
   res.json({
     success: true,
     message: "✅ Servidor HTTP/2 con SPDY funcionando",
@@ -372,38 +237,6 @@ app.use((err, req, res, next) => {
   }
 });
 
-<<<<<<< HEAD
-// Puerto
-const PORT = process.env.PORT || 3000;
-const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
-
-// Opciones HTTPS
-const httpsOptions = {
-  key: readFileSync(join(__dirname, 'key.pem')),
-  cert: readFileSync(join(__dirname, 'cert.pem'))
-};
-
-// Servidor HTTPS
-https.createServer(httpsOptions, app).listen(HTTPS_PORT, () => {
-  console.log(` Servidor HTTPS escuchando en puerto ${HTTPS_PORT}`);
-  console.log(` URL SEGURA: https://localhost:${HTTPS_PORT}`);
-  console.log(` Endpoints disponibles:`);
-  console.log(`   - https://localhost:${HTTPS_PORT}/`);
-  console.log(`   - https://localhost:${HTTPS_PORT}/api/debug`);
-  console.log(`   - https://localhost:${HTTPS_PORT}/api/rangos-edad`);
-  console.log(`   - https://localhost:${HTTPS_PORT}/api/categorias`);
-  console.log(`   - https://localhost:${HTTPS_PORT}/api/nivel-dificultad`);
-  console.log(`   - https://localhost:${HTTPS_PORT}/api/subcategoria`);
-  console.log(`   - https://localhost:${HTTPS_PORT}/auth (register/login)`);
-});
-
-// Redireccionar HTTP a HTTPS
-http.createServer((req, res) => {
-  res.writeHead(301, { Location: `https://localhost:${HTTPS_PORT}${req.url}` });
-  res.end();
-}).listen(PORT, () => {
-  console.log(`↪  HTTP (puerto ${PORT}) redirige a HTTPS`);
-=======
 // ===================== CONFIGURACIÓN HTTP/2 + SPDY =====================
 function getLocalIP() {
   const interfaces = os.networkInterfaces();
@@ -587,7 +420,6 @@ async function iniciar() {
 // Manejo de errores del proceso
 process.on('unhandledRejection', (err) => {
   console.error('❌ Unhandled Rejection:', err.message);
->>>>>>> origin/dev-Sarahi-Cuestionario
 });
 
 process.on('uncaughtException', (err) => {
