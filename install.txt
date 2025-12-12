@@ -1,5 +1,3 @@
-
-
 ## 1. Introducción
 
 Este proyecto implementa un **sistema backend para gestión de cuestionarios**
@@ -21,7 +19,7 @@ Puerto fijo de operación: 3000
 Querido Usuario , Antes de instalar el proyecto, asegúrate de contar con:
 
 1.- Visual Studio Code
-2.- Node.js version 18 o superior version  20 
+2.- Node.js v18 o superior (ideal v20)
 3.- npm 9+ o yarn
 4.- Cuenta gratuita en MongoDB Atlas -> OPCIONAL(  https://www.mongodb.com/es/cloud/atlas/register  )
 5.- Postman  para probar la API
@@ -72,16 +70,22 @@ PORT=3000
 
 
 --------------------------------------------------------------------------------------------------
-Certificados  HTTPS
+5. Certificados  HTTPS
 -------------------------------------------------------------------------------------------------
 Los certificados SSL deben colocarse en la raíz del proyecto con los nombres:
 cd progra_web_cuestionario 
 - key.pem
 
+openssl genrsa -out certs/key.pem 2048
+
+
 - cert.pem
 
+openssl req -new -x509 -key certs/key.pem -out certs/cert.pem -days 365 -subj "/CN=localhost"
+
+
 -----------------------------------------------------------------
-Probar en Postman — pasos concretos
+6. Probar en Postman — pasos concretos
 
 -----------------------------------------------------------
 1) Asegurarse de que el servidor esté corriendo con el siguiente comando: 
@@ -94,12 +98,12 @@ URL base: https://localhost:3000
 Verifica en consola mensajes como MongoDB conectado correctamente
 
 ------------------------------------------
-pasos para crear un token
+7. pasos para crear un token
 ----------------------------------------
+abrir posmant
+ Registrar usuarios (POST /auth/register)
 
-2. Registrar usuarios (POST /auth/register)
-
-En Postman: nuevo request → POST http://localhost:3000/auth/register → Body → raw → JSON.
+1. En Postman: nuevo request → POST http://localhost:3000/auth/register → Body → raw → JSON.
 
 Payloads de prueba : :
 
@@ -123,7 +127,7 @@ b) Profesor
 
 Respuesta esperada: 201 o 200 con objeto usuario (sin password). Si ya existen, el endpoint probablemente devolverá error de usuario duplicado — en ese caso omite el registro y pasa al login.
 
-3. Login (POST /auth/login) → obtener JWT
+2. Login (POST /auth/login) → obtener JWT
 
 En Postman: POST http://localhost:3000/auth/login → Body JSON.
 
@@ -182,8 +186,249 @@ Body (JSON) — según tu ejemplo:
 }
 
 
-curl:
 
+Respuesta esperada: 201 o 200 con confirmación y el documento creado:
+
+{
+  "msg": "Categoría creada correctamente",
+  "data": {
+    "_id": "64a1...",
+    "id_categoria": 1001,
+    "nombre": "Matemáticas",
+    "createdAt": "...",
+    ...
+  }
+}
+
+
+Si recibes 403 o 401, revisa:
+
+Token inválido/expirado
+
+Token sin rol admin (usa admin)
+
+Falta x-license-key si el middleware exige licencia
+
+5. Probar endpoint crear nivel de dificultad (POST /api/nivel-dificultad)
+
+Request:
+
+URL: POST http://localhost:3000/api/nivel-dificultad
+
+Headers: igual que el paso anterior (Authorization, x-license-key si aplica)
+
+Body (JSON) — según tu ejemplo:
+
+{
+  "id_dificultad": 900001,
+  "descripcion": "Difícil"
+}
+
+
+
+
+Respuesta esperada: confirmación con el documento guardado.
+
+6. Listados (GET)
+
+Probar obtener los recursos:
+
+GET http://localhost:3000/api/categorias
+
+GET http://localhost:3000/api/nivel-dificultad
+
+Headers:
+
+Authorization: Bearer <TOKEN> (si las rutas están protegidas)
+
+
+
+## 1. Introducción
+
+Este proyecto implementa un **sistema backend para gestión de cuestionarios**
+
+**Características principales:**
+
+
+Autenticación híbrida mediante licencias y JWT
+
+Base de datos alojada en MongoDB Atlas
+
+Servidor seguro: HTTPS + HTTP/2 + SPDY
+
+Puerto fijo de operación: 3000
+
+-------------------------------------------------------------------------------------
+#2. Requisitos previos                                                             
+------------------------------------------------------------------------------------
+Querido Usuario , Antes de instalar el proyecto, asegúrate de contar con:
+
+1.- Visual Studio Code
+2.- Node.js v18 o superior (ideal v20)
+3.- npm 9+ o yarn
+4.- Cuenta gratuita en MongoDB Atlas -> OPCIONAL(  https://www.mongodb.com/es/cloud/atlas/register  )
+5.- Postman  para probar la API
+
+----------------------------------------------------------------------------------------------
+ 3.Instalación del proyecto
+---------------------------------------------------------------
+
+ 3.1 Clonar el repositorio
+
+Ejecuta el siguiente comando en tu terminal o PowerShell:
+
+git clone https://github.com/125Srh/progra_web_cuestionario.git
+
+
+ 3.2 Ingresar al directorio del proyecto
+
+cd progra_web_cuestionario
+
+ 3.3 Instalar dependencias
+
+npm install
+
+ 3.4 Verificar archivos esenciales
+
+Confirma que los siguientes archivos existen en la raíz del proyecto:
+
+* `cuestionario.js`
+* `package.json`
+* `.env` ( no existe, se creará en el paso siguiente)
+* Carpeta `/routes`
+* Carpeta `/controllers`
+* Carpeta `/models`
+
+------------------------------------------------
+
+## 4. Configuración del archivo .env 
+--------------------------------------------------------------------------------
+Crea un archivo llamado : .env  en la raíz del proyecto 
+
+Copia y pega lo siguiente en el archivo .env: 
+
+
+MONGODB_URI=mongodb+srv://linethls123:linethls123@cuestionario.socfhj7.mongodb.net/cuestionarioDB?retryWrites=true&w=majority&appName=cuestionario
+PORT=3000
+
+
+
+
+-------------------------------------------------------------------------------------------------
+5. Certificados  HTTPS
+-------------------------------------------------------------------------------------------------
+Los certificados SSL deben colocarse en la raíz del proyecto con los nombres:
+cd progra_web_cuestionario 
+- key.pem
+
+openssl genrsa -out certs/key.pem 2048
+
+
+- cert.pem
+
+openssl req -new -x509 -key certs/key.pem -out certs/cert.pem -days 365 -subj "/CN=localhost"
+
+
+-----------------------------------------------------------------
+6. Probar en Postman — pasos concretos
+
+-----------------------------------------------------------
+1) Asegurarse de que el servidor esté corriendo con el siguiente comando: 
+cd progra_web_cuestionario 
+npm run dev
+
+
+URL base: https://localhost:3000
+
+Verifica en consola mensajes como MongoDB conectado correctamente
+
+------------------------------------------
+7. pasos para crear un token
+----------------------------------------
+abrir posmant
+ Registrar usuarios (POST /auth/register)
+
+1. En Postman: nuevo request → POST http://localhost:3000/auth/register → Body → raw → JSON.
+
+Payloads de prueba : :
+
+a) Admin
+
+{
+  "email": "admin@gmail.com",
+  "password": "123456",
+  "role": "admin"
+}
+
+
+b) Profesor
+
+{
+  "email": "profe@gmail.com",
+  "password": "abc123",
+  "role": "profesor"
+}
+
+
+Respuesta esperada: 201 o 200 con objeto usuario (sin password). Si ya existen, el endpoint probablemente devolverá error de usuario duplicado — en ese caso omite el registro y pasa al login.
+
+2. Login (POST /auth/login) → obtener JWT
+
+En Postman: POST http://localhost:3000/auth/login → Body JSON.
+
+Copia uno de los siguientes scrips: 
+
+Admin:
+
+{
+  "email": "admin@gmail.com",
+  "password": "123456"
+}
+
+
+Profesor:
+
+{
+  "email": "profe@gmail.com",
+  "password": "abc123"
+}
+
+
+
+
+Respuesta esperada (ejemplo):
+
+{
+  "msg": "Autenticación exitosa",
+  "token": "eyJhbGciOiJIUzI1NiI...",
+  "user": { "id":"...", "email":"admin@gmail.com", "role":"admin" }
+}
+
+
+Copia el valor del campo token (JWT). Lo usarás en Authorization.
+
+4. Probar endpoint crear categoría (POST /api/categorias)
+
+Nota: normalmente el create suele requerir permiso de admin. Usa el JWT del usuario admin@gmail.com para esta operación.
+
+Request:
+
+URL: POST http://localhost:3000/api/categorias
+
+Headers:
+
+Content-Type: application/json
+
+Authorization: Bearer <TOKEN_DEL_LOGIN_ADMIN>
+
+Si tu proyecto requiere licencia: x-license-key: LIC-PRUEBA-2025-001 (o la que uses)
+
+Body (JSON) — según tu ejemplo:
+
+{
+  "id_categoria": 1001,
+  "nombre": "Matemáticas"
+}
 
 
 
@@ -240,7 +485,3 @@ GET http://localhost:3000/api/nivel-dificultad
 Headers:
 
 Authorization: Bearer <TOKEN> (si las rutas están protegidas)
-
-x-license-key: <LICENSE_KEY> (si aplica)
-
-
