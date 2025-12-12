@@ -41,9 +41,9 @@ PROGRAMACION WEB/
 └── 📂 node_modules/                   # Dependencias de Node.js
 ```
 
-## 🚀 Características
+##  Características
 
-### ✅ Módulos Implementados
+###  Módulos Implementados
 - **Autenticación** (`src/auth/`) - Sistema de login y registro
 - **Cuestionarios** (`src/examen/`) - Gestión completa de preguntas
   - Categorías
@@ -62,4 +62,5 @@ PROGRAMACION WEB/
 
 
 ¿Te gustaría que agregue algo específico sobre alguno de los módulos que ya tienes implementados?
+
 
