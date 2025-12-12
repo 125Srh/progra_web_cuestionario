@@ -1,27 +1,26 @@
-import express from 'express';
-import * as subcategoriaController from './subcategoria.controller.js';
+// src/examen/subcategoria/subcategoria.routes.js
 
-const router = express.Router();
+import { Router } from "express";
 
-// POST - Crear múltiples subcategorías
-router.post('/multiples', subcategoriaController.crearMultiples);
+import {
+  createSubcategoria,
+  getSubcategorias,
+  getSubcategoriaById,
+  updateSubcategoria,
+  deleteSubcategoria,
+  toggleSubcategoria
+} from "./subcategoria.controller.js";
 
-// GET - Obtener todas las subcategorías
-router.get('/', subcategoriaController.obtenerTodas);
+import { authorize } from "../../auth/auth.middleware.js";
 
-// GET - Obtener subcategorías por categoría
-router.get('/categoria/:idCategoria', subcategoriaController.obtenerPorCategoria);
+const router = Router();
 
-// GET - Obtener una subcategoría por ID
-router.get('/:id', subcategoriaController.obtenerPorId);
+router.get("/", authorize(["admin", "profesor"]), getSubcategorias);
+router.get("/:id", authorize(["admin", "profesor"]), getSubcategoriaById);
 
-// POST - Crear una subcategoría
-router.post('/', subcategoriaController.crear);
-
-// PUT - Actualizar una subcategoría
-router.put('/:id', subcategoriaController.actualizar);
-
-// DELETE - Eliminar una subcategoría
-router.delete('/:id', subcategoriaController.eliminar);
+router.post("/", authorize(["admin"]), createSubcategoria);
+router.put("/:id", authorize(["admin"]), updateSubcategoria);
+router.delete("/:id", authorize(["admin"]), deleteSubcategoria);
+router.patch("/:id/toggle", authorize(["admin"]), toggleSubcategoria);
 
 export default router;
