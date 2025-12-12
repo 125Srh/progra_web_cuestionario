@@ -1,0 +1,93 @@
+ INTRODUCCIÓN
+ Sistema backend para cuestionarios con HTTP/2
+
+API REST con autenticación por licencias
+
+Base de datos MongoDB Atlas
+
+Protocolo: HTTPS + HTTP/2 + SPDY
+
+Puerto fijo: 3000
+
+ REQUISITOS PREVIOS
+Node.js 18 o superior
+
+npm 9+ o yarn
+
+Cuenta MongoDB Atlas gratuita
+
+Git instalado
+
+Postman/Insomnia (opcional)
+
+INSTALACIÓN
+Clonar repositorio: git clone [URL]
+
+Navegar a carpeta: cd progra_web_cuestionario
+
+Instalar dependencias: npm install
+
+Verificar archivos: cuestionario.js, package.json, .env
+
+CONFIGURACIÓN .ENV
+Crear archivo .env en raíz
+
+Puerto: PORT=3000
+
+MongoDB: MONGODB_URI=[tu_uri_mongodb]
+
+HTTPS: USAR_HTTPS=true
+
+HTTP2: USAR_HTTP2=true
+
+Licencias ya configuradas
+
+ MONGODB ATLAS
+Crear cuenta en mongodb.com/cloud/atlas
+
+Crear cluster gratuito
+
+Crear usuario de base de datos
+
+Obtener URI de conexión
+
+Agregar a .env como MONGODB_URI  Y pega lo siguiente:MONGODB_URI=mongodb+srv://linethls123:linethls123@cuestionario.socfhj7.mongodb.net/cuestionarioDB?retryWrites=true&w=majority&appName=cuestionario
+PORT=3000
+
+EJECUCIÓN SERVIDOR
+Modo desarrollo: npm run dev
+
+Modo producción: npm start
+
+Esperar mensaje: " SERVIDOR HTTPS + HTTP/2 INICIADO"
+
+Verificar: " MongoDB conectado correctamente"
+
+ACCESO INICIAL
+URL local: https://localhost:3000
+
+En navegador: https://localhost:3000/test-licencia
+
+Aceptar advertencia certificado (normal en desarrollo)
+
+Ver respuesta JSON con información
+
+
+ENDPOINTS PRINCIPALES
+GET / → Info servidor
+
+GET /api/categorias → Listar categorías
+
+POST /api/categorias → Crear categoría
+
+GET /api/rangos-edad → Listar rangos edad
+
+POST /api/rangos-edad → Crear rango edad
+
+GET /api/nivel-dificultad → Listar niveles
+
+POST /api/nivel-dificultad → Crear nivel
+
+GET /api/subcategoria → Listar subcategorías
+
+POST /api/subcategoria → Crear subcategoría
