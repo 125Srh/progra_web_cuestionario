@@ -201,7 +201,7 @@ Respuesta esperada: 201 o 200 con confirmación y el documento creado:
 }
 
 
-Si recibes 403 o 401, revisa:
+Si recibes (403 o 401), revisa:
 
 Token inválido/expirado
 
