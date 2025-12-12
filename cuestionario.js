@@ -28,7 +28,7 @@ const LICENCIAS_VALIDAS = new Set([
   "LICENCIA_2_PREMIUM_2024_ABC789"
 ]);
 
-console.log('🚀 Iniciando servidor HTTP/2 con SPDY y licencias...');
+console.log(' Iniciando servidor HTTP/2 con SPDY y licencias...');
 
 const app = express();
 
@@ -94,7 +94,7 @@ async function cargarRutas() {
     rangoEdadRoutes = rangoEdadModule.default;
     console.log('✅ RangoEdad routes cargado');
   } catch (error) {
-    console.log('❌ RangoEdad routes no encontrado');
+    console.log(' RangoEdad routes no encontrado');
     rangoEdadRoutes = express.Router();
     rangoEdadRoutes.get("/", (req, res) => res.json({ message: "RangoEdad routes - FALLBACK" }));
   }
@@ -104,7 +104,7 @@ async function cargarRutas() {
     categoriasRoutes = categoriasModule.default;
     console.log('✅ Categorias routes cargado');
   } catch (error) {
-    console.log('❌ Categorias routes no encontrado');
+    console.log(' Categorias routes no encontrado');
     categoriasRoutes = express.Router();
     categoriasRoutes.get("/", (req, res) => res.json({ message: "Categorias routes - FALLBACK" }));
   }
@@ -114,7 +114,7 @@ async function cargarRutas() {
     nivelDificultadRoutes = nivelDificultadModule.default;
     console.log('✅ NivelDificultad routes cargado');
   } catch (error) {
-    console.log('❌ NivelDificultad routes no encontrado');
+    console.log(' NivelDificultad routes no encontrado');
     nivelDificultadRoutes = express.Router();
     nivelDificultadRoutes.get("/", (req, res) => res.json({ message: "NivelDificultad routes - FALLBACK" }));
   }
@@ -124,7 +124,7 @@ async function cargarRutas() {
     subcategoriaRoutes = subcategoriaModule.default;
     console.log('✅ Subcategoria routes cargado');
   } catch (error) {
-    console.log('❌ Subcategoria routes no encontrado');
+    console.log(' Subcategoria routes no encontrado');
     subcategoriaRoutes = express.Router();
     subcategoriaRoutes.get("/", (req, res) => res.json({ message: "Subcategoria routes - FALLBACK" }));
   }
@@ -170,7 +170,7 @@ app.get("/", (req, res) => {
   
   res.json({
     success: true,
-    message: "🎯 API Cuestionario Pro - HTTP/2 + SPDY",
+    message: " API Cuestionario Pro - HTTP/2 + SPDY",
     version: "2.0.0",
     protocol: protocol,
     httpVersion: isHTTP2 ? '2.0' : (req.httpVersion || '1.1'),
@@ -225,7 +225,7 @@ app.use((req, res) => {
 
 // Manejo de errores
 app.use((err, req, res, next) => {
-  console.error('❌ Error en petición:', err.message);
+  console.error(' Error en petición:', err.message);
   
   if (!res.headersSent) {
     res.status(500).json({
@@ -281,7 +281,7 @@ function iniciarServidor() {
     
     console.log('✅ Certificados SSL cargados correctamente');
   } catch (error) {
-    console.error('\n❌ Error al cargar certificados SSL');
+    console.error('\n Error al cargar certificados SSL');
     console.error(`   Detalles: ${error.message}`);
     console.log('\n💡 Solución:');
     console.log('   1. Verifique que existan los archivos:');
@@ -307,7 +307,7 @@ function iniciarServidor() {
       const server = spdy.createServer(spdyOptions, app);
       
       server.on('error', (err) => {
-        console.error('❌ Error en servidor:', err.message);
+        console.error(' Error en servidor:', err.message);
         if (err.code === 'EADDRINUSE') {
           console.error(`   El puerto ${PORT} ya está en uso`);
           console.error('   PowerShell: netstat -ano | findstr :3000');
@@ -349,7 +349,7 @@ function iniciarServidor() {
       return server;
       
     } catch (error) {
-      console.error('\n❌ Error al crear servidor HTTP/2:', error.message);
+      console.error('\n Error al crear servidor HTTP/2:', error.message);
       console.error('   Stack:', error.stack);
       process.exit(1);
     }
@@ -360,7 +360,7 @@ function iniciarServidor() {
       const server = https.createServer(opciones, app);
       
       server.on('error', (err) => {
-        console.error('❌ Error en servidor HTTPS:', err.message);
+        console.error(' Error en servidor HTTPS:', err.message);
         process.exit(1);
       });
       
@@ -379,7 +379,7 @@ function iniciarServidor() {
       return server;
       
     } catch (error) {
-      console.error('\n❌ Error al crear servidor HTTPS:', error.message);
+      console.error('\n Error al crear servidor HTTPS:', error.message);
       console.error('   Stack:', error.stack);
       process.exit(1);
     }
@@ -411,7 +411,7 @@ async function iniciar() {
     }
     
   } catch (error) {
-    console.error('\n❌ Error fatal al iniciar servidor:', error.message);
+    console.error('\n Error fatal al iniciar servidor:', error.message);
     console.error('   Stack:', error.stack);
     process.exit(1);
   }
@@ -419,16 +419,16 @@ async function iniciar() {
 
 // Manejo de errores del proceso
 process.on('unhandledRejection', (err) => {
-  console.error('❌ Unhandled Rejection:', err.message);
+  console.error(' Unhandled Rejection:', err.message);
 });
 
 process.on('uncaughtException', (err) => {
   if (err.message.includes('EADDRINUSE') || err.message.includes('EACCES')) {
-    console.error('\n❌ Error crítico:', err.message);
+    console.error('\n Error crítico:', err.message);
     console.error(`   El puerto ${PORT} no está disponible`);
     process.exit(1);
   }
-  console.error('❌ Uncaught Exception:', err.message);
+  console.error(' Uncaught Exception:', err.message);
 });
 
 process.on('SIGINT', () => {
