@@ -14,7 +14,7 @@ Servidor seguro: HTTPS + HTTP/2 + SPDY
 Puerto fijo de operación: 3000
 
 -------------------------------------------------------------------------------------
-## 2. Requisitos previos                                                             
+#2. Requisitos previos                                                             
 ------------------------------------------------------------------------------------
 Querido Usuario , Antes de instalar el proyecto, asegúrate de contar con:
 
@@ -69,7 +69,7 @@ PORT=3000
 
 
 
---------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------
 5. Certificados  HTTPS
 -------------------------------------------------------------------------------------------------
 Los certificados SSL deben colocarse en la raíz del proyecto con los nombres:
@@ -201,7 +201,7 @@ Respuesta esperada: 201 o 200 con confirmación y el documento creado:
 }
 
 
-Si recibes (403 o 401), revisa:
+Si recibes 403 o 401, revisa:
 
 Token inválido/expirado
 
