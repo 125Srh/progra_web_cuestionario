@@ -101,8 +101,81 @@ URL base: https://localhost:3000
 
 Verifica en consola mensajes como MongoDB conectado correctamente
 
+
+
+--------------------------------------------------
+7. Pruebas en postman: 
 ------------------------------------------
-7. pasos para crear un token
+abrir posmant
+
+Get ->  https://localhost:3000/test-licencia
+
+
+Resultado esperado : 
+
+
+    "success": true,
+    "message": "✅ Servidor HTTP/2 con SPDY funcionando",
+    "protocol": "HTTP/1.1",
+    "spdy": true,
+    "spdyVersion": 1,
+    "licencias_validas": [
+        "LICENCIA_1_ACTIVA_2024_XYZ123",
+        "LICENCIA_2_PREMIUM_2024_ABC789"
+    ],
+    "endpoints": {
+        "publico": "/test-licencia",
+        "protegidos": [
+            "/",
+            "/api/rangos-edad",
+            "/api/categorias",
+            "/api/nivel-dificultad",
+            "/api/subcategoria"
+        ]
+    },
+    "ayuda": "Para rutas protegidas, agregue header: x-licencia: LICENCIA_1_ACTIVA_2024_XYZ123"
+}
+
+
+
+Probar la ruta PROTEGIDA  : 
+GET ->  https://localhost:3000/
+HEADERS : 
+
+Key	           Value
+x-licencia	LICENCIA_1_ACTIVA_2024_XYZ123
+
+Resultado esperado: 
+{
+    "success": true,
+    "message": "🎯 API Cuestionario Pro - HTTP/2 + SPDY",
+    "version": "2.0.0",
+    "protocol": "HTTPS",
+    "httpVersion": "1.1",
+    "httpVersionMajor": 1,
+    "encrypted": true,
+    "http2": false,
+    "spdyVersion": 1,
+    "license": "LICENCIA_1_ACTIVA_2024_XYZ123",
+    "database": "connected",
+    "endpoints": {
+        "rangos_edad": "/api/rangos-edad",
+        "categorias": "/api/categorias",
+        "nivel_dificultad": "/api/nivel-dificultad",
+        "subcategoria": "/api/subcategoria",
+        "test_licencia": "/test-licencia (pública)",
+        "health": "/health (pública)"
+    }
+}
+
+
+
+
+
+
+
+------------------------------------------
+8. pasos para crear un token
 ----------------------------------------
 abrir posmant
  Registrar usuarios (POST /auth/register)
