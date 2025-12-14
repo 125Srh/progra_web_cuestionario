@@ -72,17 +72,21 @@ PORT=3000
 --------------------------------------------------------------------------------------------------
 5. Certificados  HTTPS
 -------------------------------------------------------------------------------------------------
-Los certificados SSL deben colocarse en la raíz del proyecto con los nombres:
+Los certificados SSL deben colocarse en la raíz del proyecto :
 cd progra_web_cuestionario 
-- key.pem
 
-openssl genrsa -out certs/key.pem 2048
+Crear estos archivos con los siguientes nombres : 
+ key.pem 
+ cert.pem 
 
+Copiar el siguiente comando para generar los certificados: 
+Para windows:
+ 
+openssl req -x509 -newkey rsa:4096 -nodes -keyout key.pem -out cert.pem -days 365 -subj "/CN=localhost" -config NUL
 
-- cert.pem
+Para Mac: 
 
-openssl req -new -x509 -key certs/key.pem -out certs/cert.pem -days 365 -subj "/CN=localhost"
-
+openssl req -x509 -newkey rsa:4096 -nodes -keyout key.pem -out cert.pem -days 365 -subj "/CN=localhost"
 
 -----------------------------------------------------------------
 6. Probar en Postman — pasos concretos
