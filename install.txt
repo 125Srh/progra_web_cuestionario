@@ -108,32 +108,34 @@ Verifica en consola mensajes como MongoDB conectado correctamente
 ------------------------------------------
 abrir posmant
 
+Get-> https://localhost:3000
+ 
+Respuesta esperada: 
+
+{
+    "success": true,
+    "message": "🏫 API Cuestionario Educativo",
+    "version": "1.0.0"
+}
+
 Get ->  https://localhost:3000/test-licencia
 
 
 Resultado esperado : 
 
 
+   {
     "success": true,
-    "message": "✅ Servidor HTTP/2 con SPDY funcionando",
-    "protocol": "HTTP/1.1",
-    "spdy": true,
-    "spdyVersion": 1,
-    "licencias_validas": [
-        "LICENCIA_1_ACTIVA_2024_XYZ123",
-        "LICENCIA_2_PREMIUM_2024_ABC789"
+    "message": "✅ Servidor funcionando",
+    "version": "1.0.0",
+    "fecha": "2025-12-14T04:45:17.563Z",
+    "modulos": [
+        "categorias",
+        "rangoEdad",
+        "nivelDificultad",
+        "subcategoria"
     ],
-    "endpoints": {
-        "publico": "/test-licencia",
-        "protegidos": [
-            "/",
-            "/api/rangos-edad",
-            "/api/categorias",
-            "/api/nivel-dificultad",
-            "/api/subcategoria"
-        ]
-    },
-    "ayuda": "Para rutas protegidas, agregue header: x-licencia: LICENCIA_1_ACTIVA_2024_XYZ123"
+    "autenticacion": "JWT + Licencias"
 }
 
 
@@ -145,420 +147,133 @@ HEADERS :
 Key	           Value
 x-licencia	LICENCIA_1_ACTIVA_2024_XYZ123
 
-Resultado esperado: 
+
+
+
+
+crear usuario para generar Tokens: 
+Profesor : 
+
+POST https://localhost:3000/api/auth/register
+
+Headers:
+
+Content-Type:     application/json
+
+Body (raw/JSON):
+json
+
 {
-    "success": true,
-    "message": "🎯 API Cuestionario Pro - HTTP/2 + SPDY",
-    "version": "2.0.0",
-    "protocol": "HTTPS",
-    "httpVersion": "1.1",
-    "httpVersionMajor": 1,
-    "encrypted": true,
-    "http2": false,
-    "spdyVersion": 1,
-    "license": "LICENCIA_1_ACTIVA_2024_XYZ123",
-    "database": "connected",
-    "endpoints": {
-        "rangos_edad": "/api/rangos-edad",
-        "categorias": "/api/categorias",
-        "nivel_dificultad": "/api/nivel-dificultad",
-        "subcategoria": "/api/subcategoria",
-        "test_licencia": "/test-licencia (pública)",
-        "health": "/health (pública)"
+  "email": "profesor@test.com",
+  "password": "abc123",
+  "role": "profesor"
+}
+
+Respuesta esperada : 
+{
+    "message": "Usuario registrado correctamente",
+    "user": {
+        "id": "693e3f0a9cf06598ad23a9a8",
+        "email": "profesor@test.com",
+        "role": "profesor"
     }
 }
 
 
+POST https://localhost:3000/api/auth/login
 
-
-
-
-
-------------------------------------------
-8. pasos para crear un token
-----------------------------------------
-abrir posmant
- Registrar usuarios (POST /auth/register)
-
-1. En Postman: nuevo request → POST http://localhost:3000/auth/register → Body → raw → JSON.
-
-Payloads de prueba : :
-
-a) Admin
 
 {
+  "email": "profesor@test.com",
+  "password": "abc123"
+}
+
+Respuesta esperada : 
+
+
+    "message": "Login exitoso",
+    "user": {
+        "id": "693e3f0a9cf06598ad23a9a8",
+        "email": "profesor@test.com",
+        "role": "profesor"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5M2UzZjBhOWNmMDY1OThhZDIzYTlhOCIsImVtYWlsIjoicHJvZmVzb3JAdGVzdC5jb20iLCJyb2xlIjoicHJvZmVzb3IiLCJpYXQiOjE3NjU2ODcxNTgsImV4cCI6MTc2NTY5Nzk1OH0.1mPKlT9iOp4qq0ZKUb3o7I_pVp3ReWbtuRot6qsijP0"
+}
+
+
+Autorización: 
+
+
+GET https://localhost:3000/api/categorias
+
+
+Headers : 
+
+Key                      Value 
+Authorization             Bearer  <Pegar token aqui> 
+
+Send
+
+Respuesta esperada : 
+{
+    "success": true,
+    "count": 2,
+    "data": [
+        {
+            "_id": "69318ceb86c8d5d4bb4fbf73",
+            "nombre_categoria": "Matemáticas",
+            "description": "",
+            "activo": true,
+            "fecha_creacion": "2025-12-04T13:30:19.439Z"
+        },
+        {
+            "_id": "6927d835c74088e681f0b710",
+            "nombre_categoria": "Tecnología",
+            "description": "Productos y servicios tecnológicos",
+            "activo": true,
+            "fecha_creacion": "2025-11-27T04:48:53.232Z"
+        }
+    ]
+}
+
+PRUEBA PARA PROBAR: 
+
+
+Admin 
+
+
+POST https://localhost:3000/api/auth/register
+
+
+Body (raw/JSON):
+json{
   "email": "admin@gmail.com",
   "password": "123456",
   "role": "admin"
 }
 
 
-b) Profesor
-
-{
-  "email": "profe@gmail.com",
-  "password": "abc123",
-  "role": "profesor"
-}
-
-
-Respuesta esperada: 201 o 200 con objeto usuario (sin password). Si ya existen, el endpoint probablemente devolverá error de usuario duplicado — en ese caso omite el registro y pasa al login.
-
-2. Login (POST /auth/login) → obtener JWT
-
-En Postman: POST http://localhost:3000/auth/login → Body JSON.
-
-Copia uno de los siguientes scrips: 
-
-Admin:
-
+POST https://localhost:3000/api/auth/login
+Body-> Raw 
 {
   "email": "admin@gmail.com",
   "password": "123456"
 }
 
 
-Profesor:
+Autorización 
 
-{
-  "email": "profe@gmail.com",
-  "password": "abc123"
-}
-
-
-
-
-Respuesta esperada (ejemplo):
-
-{
-  "msg": "Autenticación exitosa",
-  "token": "eyJhbGciOiJIUzI1NiI...",
-  "user": { "id":"...", "email":"admin@gmail.com", "role":"admin" }
-}
-
-
-Copia el valor del campo token (JWT). Lo usarás en Authorization.
-
-4. Probar endpoint crear categoría (POST /api/categorias)
-
-Nota: normalmente el create suele requerir permiso de admin. Usa el JWT del usuario admin@gmail.com para esta operación.
-
-Request:
-
-URL: POST http://localhost:3000/api/categorias
-
+POST https://localhost:3000/api/categorias
 Headers:
 
-Content-Type: application/json
+Content-Type:      application/json
+Authorization:    Bearer TU_TOKEN_AQUI
+SEND
 
-Authorization: Bearer <TOKEN_DEL_LOGIN_ADMIN>
-
-Si tu proyecto requiere licencia: x-license-key: LIC-PRUEBA-2025-001 (o la que uses)
-
-Body (JSON) — según tu ejemplo:
-
-{
-  "id_categoria": 1001,
-  "nombre": "Matemáticas"
-}
-
-
-
-Respuesta esperada: 201 o 200 con confirmación y el documento creado:
-
-{
-  "msg": "Categoría creada correctamente",
-  "data": {
-    "_id": "64a1...",
-    "id_categoria": 1001,
-    "nombre": "Matemáticas",
-    "createdAt": "...",
-    ...
-  }
-}
-
-
-Si recibes 403 o 401, revisa:
-
-Token inválido/expirado
-
-Token sin rol admin (usa admin)
-
-Falta x-license-key si el middleware exige licencia
-
-5. Probar endpoint crear nivel de dificultad (POST /api/nivel-dificultad)
-
-Request:
-
-URL: POST http://localhost:3000/api/nivel-dificultad
-
-Headers: igual que el paso anterior (Authorization, x-license-key si aplica)
-
-Body (JSON) — según tu ejemplo:
-
-{
-  "id_dificultad": 900001,
-  "descripcion": "Difícil"
-}
-
-
-
-
-Respuesta esperada: confirmación con el documento guardado.
-
-6. Listados (GET)
-
-Probar obtener los recursos:
-
-GET http://localhost:3000/api/categorias
-
-GET http://localhost:3000/api/nivel-dificultad
-
+GET https://localhost:3000/api/categorias
 Headers:
+- `Authorization:       Bearer TU_TOKEN_AQUI`
 
-Authorization: Bearer <TOKEN> (si las rutas están protegidas)
 
 
 
-## 1. Introducción
-
-Este proyecto implementa un **sistema backend para gestión de cuestionarios**
-
-**Características principales:**
-
-
-Autenticación híbrida mediante licencias y JWT
-
-Base de datos alojada en MongoDB Atlas
-
-Servidor seguro: HTTPS + HTTP/2 + SPDY
-
-Puerto fijo de operación: 3000
-
--------------------------------------------------------------------------------------
-#2. Requisitos previos                                                             
-------------------------------------------------------------------------------------
-Querido Usuario , Antes de instalar el proyecto, asegúrate de contar con:
-
-1.- Visual Studio Code
-2.- Node.js v18 o superior (ideal v20)
-3.- npm 9+ o yarn
-4.- Cuenta gratuita en MongoDB Atlas -> OPCIONAL(  https://www.mongodb.com/es/cloud/atlas/register  )
-5.- Postman  para probar la API
-
-----------------------------------------------------------------------------------------------
- 3.Instalación del proyecto
----------------------------------------------------------------
-
- 3.1 Clonar el repositorio
-
-Ejecuta el siguiente comando en tu terminal o PowerShell:
-
-git clone https://github.com/125Srh/progra_web_cuestionario.git
-
-
- 3.2 Ingresar al directorio del proyecto
-
-cd progra_web_cuestionario
-
- 3.3 Instalar dependencias
-
-npm install
-
- 3.4 Verificar archivos esenciales
-
-Confirma que los siguientes archivos existen en la raíz del proyecto:
-
-* `cuestionario.js`
-* `package.json`
-* `.env` ( no existe, se creará en el paso siguiente)
-* Carpeta `/routes`
-* Carpeta `/controllers`
-* Carpeta `/models`
-
-------------------------------------------------
-
-## 4. Configuración del archivo .env 
---------------------------------------------------------------------------------
-Crea un archivo llamado : .env  en la raíz del proyecto 
-
-Copia y pega lo siguiente en el archivo .env: 
-
-
-MONGODB_URI=mongodb+srv://linethls123:linethls123@cuestionario.socfhj7.mongodb.net/cuestionarioDB?retryWrites=true&w=majority&appName=cuestionario
-PORT=3000
-
-
-
-
--------------------------------------------------------------------------------------------------
-5. Certificados  HTTPS
--------------------------------------------------------------------------------------------------
-Los certificados SSL deben colocarse en la raíz del proyecto con los nombres:
-cd progra_web_cuestionario 
-- key.pem
-
-openssl genrsa -out certs/key.pem 2048
-
-
-- cert.pem
-
-openssl req -new -x509 -key certs/key.pem -out certs/cert.pem -days 365 -subj "/CN=localhost"
-
-
------------------------------------------------------------------
-6. Probar en Postman — pasos concretos
-
------------------------------------------------------------
-1) Asegurarse de que el servidor esté corriendo con el siguiente comando: 
-cd progra_web_cuestionario 
-npm run dev
-
-
-URL base: https://localhost:3000
-
-Verifica en consola mensajes como MongoDB conectado correctamente
-
-------------------------------------------
-7. pasos para crear un token
-----------------------------------------
-abrir posmant
- Registrar usuarios (POST /auth/register)
-
-1. En Postman: nuevo request → POST http://localhost:3000/auth/register → Body → raw → JSON.
-
-Payloads de prueba : :
-
-a) Admin
-
-{
-  "email": "admin@gmail.com",
-  "password": "123456",
-  "role": "admin"
-}
-
-
-b) Profesor
-
-{
-  "email": "profe@gmail.com",
-  "password": "abc123",
-  "role": "profesor"
-}
-
-
-Respuesta esperada: 201 o 200 con objeto usuario (sin password). Si ya existen, el endpoint probablemente devolverá error de usuario duplicado — en ese caso omite el registro y pasa al login.
-
-2. Login (POST /auth/login) → obtener JWT
-
-En Postman: POST http://localhost:3000/auth/login → Body JSON.
-
-Copia uno de los siguientes scrips: 
-
-Admin:
-
-{
-  "email": "admin@gmail.com",
-  "password": "123456"
-}
-
-
-Profesor:
-
-{
-  "email": "profe@gmail.com",
-  "password": "abc123"
-}
-
-
-
-
-Respuesta esperada (ejemplo):
-
-{
-  "msg": "Autenticación exitosa",
-  "token": "eyJhbGciOiJIUzI1NiI...",
-  "user": { "id":"...", "email":"admin@gmail.com", "role":"admin" }
-}
-
-
-Copia el valor del campo token (JWT). Lo usarás en Authorization.
-
-4. Probar endpoint crear categoría (POST /api/categorias)
-
-Nota: normalmente el create suele requerir permiso de admin. Usa el JWT del usuario admin@gmail.com para esta operación.
-
-Request:
-
-URL: POST http://localhost:3000/api/categorias
-
-Headers:
-
-Content-Type: application/json
-
-Authorization: Bearer <TOKEN_DEL_LOGIN_ADMIN>
-
-Si tu proyecto requiere licencia: x-license-key: LIC-PRUEBA-2025-001 (o la que uses)
-
-Body (JSON) — según tu ejemplo:
-
-{
-  "id_categoria": 1001,
-  "nombre": "Matemáticas"
-}
-
-
-
-Respuesta esperada: 201 o 200 con confirmación y el documento creado:
-
-{
-  "msg": "Categoría creada correctamente",
-  "data": {
-    "_id": "64a1...",
-    "id_categoria": 1001,
-    "nombre": "Matemáticas",
-    "createdAt": "...",
-    ...
-  }
-}
-
-
-Si recibes 403 o 401, revisa:
-
-Token inválido/expirado
-
-Token sin rol admin (usa admin)
-
-Falta x-license-key si el middleware exige licencia
-
-5. Probar endpoint crear nivel de dificultad (POST /api/nivel-dificultad)
-
-Request:
-
-URL: POST http://localhost:3000/api/nivel-dificultad
-
-Headers: igual que el paso anterior (Authorization, x-license-key si aplica)
-
-Body (JSON) — según tu ejemplo:
-
-{
-  "id_dificultad": 900001,
-  "descripcion": "Difícil"
-}
-
-
-
-
-Respuesta esperada: confirmación con el documento guardado.
-
-6. Listados (GET)
-
-Probar obtener los recursos:
-
-GET http://localhost:3000/api/categorias
-
-GET http://localhost:3000/api/nivel-dificultad
-
-Headers:
-
-Authorization: Bearer <TOKEN> (si las rutas están protegidas)
